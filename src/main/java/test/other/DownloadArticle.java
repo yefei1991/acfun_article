@@ -14,18 +14,30 @@ import io.github.biezhi.anima.Anima;
 import test.bean.Article;
 import test.util.HttpUtil;
 
-public class Test {
+public class DownloadArticle {
 
 	public static void main(String[] args) {
-		Test test=new Test();
+		DownloadArticle test=new DownloadArticle();
 		test.start();
 	}
 	
 	public void start() {
 		Anima.open("jdbc:mysql://127.0.0.1:3306/acfun", "root", "root");
-		ExecutorService service=Executors.newFixedThreadPool(10);
+		ExecutorService service=Executors.newFixedThreadPool(50);
 		for(int i=1;i<=200;i++) {
 			service.submit(new RunTask(i));
+		}
+		service.shutdown();
+		while(true) {
+			if(service.isTerminated()) {
+				System.out.println("下载文章完成");
+				break;
+			}
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
